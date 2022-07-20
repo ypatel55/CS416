@@ -1,7 +1,13 @@
 
 <html>
-<body>
-<h1>Hello World</h1>
-<p>I'm hosted with GitHub Pages.</p>
-</body>
+    <script src='https://d3js.org/d3.v5.min.js'>
+    </script>
+    <body onload = 'init()'>
+    <p> Hello this is a test </p>
+    <script>
+        async function init() {
+            const data = await d3.csv('https://uofi.box.com/shared/static/9elozjsg99bgcb7gb546wlfr3r2gc9b7.csv');
+        }
+    </script>   
+     </body>
 </html>
