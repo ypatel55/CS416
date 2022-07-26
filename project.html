@@ -1,18 +1,21 @@
 
 <html>
-    <script src='https://d3js.org/d3.v5.min.js'>
-    </script>
-    <style> circle {fill: lightblue; stroke: black;} </style>
-    <body onload = 'init()'>
-    <svg width=300 height=300>
-    </svg>
-    <p> Hello this is a test </p>
-    <script>
-        async function init() {
-            const data = await d3.csv('https://uofi.box.com/shared/static/9elozjsg99bgcb7gb546wlfr3r2gc9b7.csv');
+    <script src='https://d3js.org/d3.v5.min.js'></script>
+    <head>
+        <title>CCSO Narrative Visualization</title>
+        <link rel="stylesheet" type="text/css" href="project.css">
+    </head>
+    <body onload = 'first()'>
 
-                
-        }
-    </script>   
-     </body>
+    <h1 id="intro">Is there a relationship between a person's race and their arrest details?</h1>
+    <img src="images/handcuffs.png" class="img" width="400" height="200">
+    <h4 id="details"> Using data from the Champaign County Sheriff Office, this interactive slideshow will display various visualizations that show the relationships between race and arrest attributes</h4>
+    <div class="button-group">
+        <a class ="buttons" href="project.html" role="button">1</a></p>
+        <a class ="buttons" href="page2.html" role="button">2</a>
+        <a class ="buttons" href="page3.html" role="button">3</a>
+        <a class ="buttons" href="page4.html" role="button">4</a>
+    </div>
+
+    </body>
 </html>
