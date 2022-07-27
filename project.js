@@ -1,5 +1,5 @@
 async function loadIntro() {
-    const data = await d3.csv('data/CCSOData.csv');
+    const data = await d3.csv('https://github.com/ypatel55/CS416/main/data/CCSOData.csv');
 
     var svg = d3.select("#two").append("g").attr("transform","translate("+50+","+50+")");
 
