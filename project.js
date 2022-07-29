@@ -1,8 +1,5 @@
 async function loadTwo() {
-    const data = await d3.csv('https://ypatel55.github.io/CS416/data/CCSOData.csv');
-
-    const filteredData = data.filter(function (d) {
-        return d.RACE != "" && d.RACE != "Unknown" && d.AgeatArrest != "" && d.DaysinJail != ""});
+    const data = await d3.csv('https://ypatel55.github.io/CS416/data/worldhappiness.csv');
 
     const margin = {top: 10, right: 20, bottom: 30, left: 50},
     width = 1000 - margin.left - margin.right,
@@ -10,16 +7,55 @@ async function loadTwo() {
 
     let svg = d3.select("#chart-1").append("svg").attr("width", width + margin.left + margin.right).attr("height", height + margin.top + margin.bottom).append("g").attr("transform","translate(" + margin.left + "," + margin.top + ")");
 
-    const x = d3.scaleLinear().domain([0, 100]).range([0, width]);
+    const x = d3.scaleLinear().domain([0, 10]).range([0, width]);
     svg.append("g").attr("transform", "translate(0," + height + ")").call(d3.axisBottom(x));
 
-    const y = d3.scaleLinear().domain([0, 1000]).range([height, 0]);
+    const y = d3.scaleLinear().domain([0, 10]).range([height, 0]);
     svg.append("g").call(d3.axisLeft(y));
 
-    
-    
+    const z = getBubbleSizeScale()
+    const myColor = d3.scaleOrdinal().domain(getContinentKeys()).range(d3.schemeSet2);
 
-    svg.append('g').selectAll("circle").data(filteredData).enter().append("circle").attr("cx", function (d) {return x(Number(d.AgeatArrest));}).attr("cy", function (d) {return y(Number(d.DaysinJail));})
+    const tooltip = d3.select("#slide-1").append("div")
+    .style("opacity", 0)
+    .attr("class", "tooltip")
+    .style("background-color", "black")
+    .style("border-radius", "5px")
+    .style("padding", "10")
+    .style("color", "white")
+    .style("width", "150px")
+    .style("height", "50px")
+
+
+    svg.append('g')
+    .selectAll("scatterplot-dot")
+    .data(data)
+    .enter()
+    .append("circle")
+    .attr("class", "bubbles")
+    .attr("cx", function (d) {
+        return x(Number(d.HappinessScore));
+    })
+    .attr("cy", function (d) {
+        return y(Number(d.Economy(GDPperCapita)));
+    })
+    .on("mouseover", function (event, d) {
+        tooltip.transition()
+            .duration(200)
+            .style("opacity", .9);
+        tooltip.html(firstChartTooltipHTML(d));
+        tooltip.style("left", (event.pageX) + "px")
+            .style("top", (event.pageY - 28) + "px")
+    })
+    .on("mouseout", function (d) {
+        tooltip.transition()
+            .duration(500)
+            .style("opacity", 0);
+    })
+    .style("fill", function (d) {
+        return myColor(d.Region);
+    });
+    //svg.append('g').selectAll("circle").data(data).enter().append("circle").attr("cx", function (d) {return x(Number(d.AgeatArrest));}).attr("cy", function (d) {return y(Number(d.DaysinJail));})
     
 
 
@@ -40,8 +76,8 @@ function getBubbleSizeScale() {
     return z;
 }
 
-function getRaceKeys() {
-    return ["White", "Black", "Native America", "Hispanic", "Asian/Pacific Islander", "White(Hispanic)"];
+function getContinentKeys() {
+    return ["Western Europe", "North America", "Australia and New Zealand", "Middle East and Northern Africa", "Latin America and Caribbean", "Southeastern Asia", "Central and Eastern Europe", "Sub-Saharan Africa"];
 }
 
 function firstChartTooltipHTML(object) {
