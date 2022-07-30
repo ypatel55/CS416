@@ -1,94 +1,152 @@
 async function loadTwo() {
-    const data = await d3.csv('https://ypatel55.github.io/CS416/data/worldhappiness.csv');
+    const data = await d3.csv('https://ypatel55.github.io/CS416/data/CCSOData.csv');
 
-    const margin = {top: 10, right: 20, bottom: 30, left: 50},
-    width = 1000 - margin.left - margin.right,
-    height = 800 - margin.top - margin.bottom;
+    var text = "";
+    var opacity = 1, hoverOpacity = 0.50, other = 1, tooltipSize = 15;
 
-    let svg = d3.select("#chart-1").append("svg").attr("width", width + margin.left + margin.right).attr("height", height + margin.top + margin.bottom).append("g").attr("transform","translate(" + margin.left + "," + margin.top + ")");
+    const blackData = data.filter(function (d) {
+        return d.RACE == 'Black'});
+    var blackAVG = d3.sum(blackData.map(function(d) {                
+        return d.AgeatArrest;                                           
+      }))/36319; 
 
-    const x = d3.scaleLinear().domain([0, 10]).range([0, width]);
-    svg.append("g").attr("transform", "translate(0," + height + ")").call(d3.axisBottom(x));
+    const whiteData = data.filter(function (d) {
+        return d.RACE == 'White'});
+    var whiteAVG = d3.sum(whiteData.map(function(d) {                
+        return d.AgeatArrest;                                           
+      }))/25175;
 
-    const y = d3.scaleLinear().domain([0, 10]).range([height, 0]);
-    svg.append("g").call(d3.axisLeft(y));
+    const hispanicData = data.filter(function (d) {
+        return d.RACE == 'Hispanic'});
+    var hispanicAVG = d3.sum(hispanicData.map(function(d) {                
+        return d.AgeatArrest;                                           
+      }))/4740;
 
-    const z = getBubbleSizeScale()
-    const myColor = d3.scaleOrdinal().domain(getContinentKeys()).range(d3.schemeSet2);
+    const asianData = data.filter(function (d) {
+        return d.RACE == 'Asian/Pacific Islander'});
+    var asianAVG = d3.sum(asianData.map(function(d) {                
+        return d.AgeatArrest;                                           
+      }))/751;
 
-    const tooltip = d3.select("#slide-1").append("div")
-    .style("opacity", 0)
-    .attr("class", "tooltip")
-    .style("background-color", "black")
-    .style("border-radius", "5px")
-    .style("padding", "10")
-    .style("color", "white")
-    .style("width", "150px")
-    .style("height", "50px")
+    const nativeAmericanData = data.filter(function (d) {
+        return d.RACE == 'Native American'});
+    var nativeAmericanAVG = d3.sum(nativeAmericanData.map(function(d) {                
+        return d.AgeatArrest;                                           
+      }))/54;
 
-
-    svg.append('g')
-    .selectAll("scatterplot-dot")
-    .data(data)
-    .enter()
-    .append("circle")
-    .attr("class", "bubbles")
-    .attr("cx", function (d) {
-        return x(Number(d.HappinessScore));
-    })
-    .attr("cy", function (d) {
-        return y(Number(d.Economy(GDPperCapita)));
-    })
-    .on("mouseover", function (event, d) {
-        tooltip.transition()
-            .duration(200)
-            .style("opacity", .9);
-        tooltip.html(firstChartTooltipHTML(d));
-        tooltip.style("left", (event.pageX) + "px")
-            .style("top", (event.pageY - 28) + "px")
-    })
-    .on("mouseout", function (d) {
-        tooltip.transition()
-            .duration(500)
-            .style("opacity", 0);
-    })
-    .style("fill", function (d) {
-        return myColor(d.Region);
-    });
-    //svg.append('g').selectAll("circle").data(data).enter().append("circle").attr("cx", function (d) {return x(Number(d.AgeatArrest));}).attr("cy", function (d) {return y(Number(d.DaysinJail));})
-    
+    const whiteHispanicData = data.filter(function (d) {
+        return d.RACE == 'White (Hispanic)'});
+    var whiteHispanicAVG = d3.sum(whiteHispanicData.map(function(d) {                
+        return d.AgeatArrest;                                           
+      }))/20;
 
 
-   // var svg = d3.select("#two").append("g").attr("transform","translate("+50+","+50+")");
-    //var x = d3.scaleLog().domain([10,150]).range([0,200]);
-    //var y = d3.scaleLog().domain([10,150]).range([200,0]);
-    //d3.select("#two").append("g").attr("transform","translate("+50+","+50+")").call(d3.axisLeft(y).tickValues([10, 20, 50, 100]).tickFormat(d3.format("~s")));
-    //d3.select("#two").append("g").attr("transform","translate("+50+","+(200+50)+")").call(d3.axisBottom(x).tickValues([10, 20, 50, 100]).tickFormat(d3.format("~s")));
-    //svg.selectAll("circle").data(data).enter().append("circle").attr("cx", function(d) { return x(d.AgeatArrest)}).attr("cy", function(d) { return y(d.DaysinJail)}).attr("r", function(d) { return 2 + Number.parseInt(d.AgeatArrest) })
+    const finalData = [{race: "White", value: whiteAVG},{race: "Black", value: blackAVG},{race: "Hispanic", value: hispanicAVG},{race: "Asian/Pacific Islander", value: asianAVG},{race: "Native American", value: nativeAmericanAVG},{race: "White(Hispanic)", value: whiteHispanicAVG}]
 
+    var svg = d3.select("#two"),
+            margin = 200,
+            width = svg.attr("width") - margin,
+            height = svg.attr("height") - margin
+
+    var x = d3.scaleBand().range([0,width]).padding(0.4)
+    var y = d3.scaleLinear().range([height,0])
+    var color = d3.scaleOrdinal(['#85E3FF','#FFB5E8','#AFF8DB','#B5B9FF','#FFCBC1', 'yellow']);
+
+    var g = svg.append("g").attr("transform", "translate(" + 100 + "," + 100 + ")");
+
+    x.domain(finalData.map(function(d) { return d.race; }));
+    y.domain([0, d3.max(finalData, function(d) { return d.value; })]);
+
+    g.append("g").attr("transform", "translate(0," + height + ")").call(d3.axisBottom(x));
+    g.append("g").call(d3.axisLeft(y));
+
+
+    g.selectAll(".bar").data(finalData).enter().append("rect").attr("class", "bar").attr("x", function(d) { return x(d.race); }).attr("y", function(d) { return y((d.value)); }).attr("width", x.bandwidth()).attr("height", function(d) { return height - y((d.value)); })
+    .on("mouseover", function(d) {
+        d3.selectAll('rect')
+          .style("opacity", other);
+        d3.select(this) 
+          .style("opacity", hoverOpacity);
+  
+      let g = d3.selectAll("svg")
+          .style("cursor", "pointer")
+          .append("g")
+          .attr("class", "tooltip")
+          .style("opacity", 1);
+  
+          g.append("text")
+          .attr("class", "name-text")
+          .text(`${d.finalData.race} (${d.finalData.value})`)
+          .attr('text-anchor', 'middle');
+  
+          let text = g.select("text");
+        })
+      .on("mousemove", function(d) {
+            let mousePosition = d3.mouse(this);
+            let x = mousePosition[0] + width/2;
+            let y = mousePosition[1] + height/2 - tooltipSize;
+        
+            let text = d3.select('.tooltip text');
+            d3.select('.tooltip')
+              .style("opacity", 1)
+              .attr('transform',`translate(${x}, ${y})`);
+        })
+      .on("mouseout", function(d) {   
+          d3.select("svg") 
+            .select(".tooltip").remove();
+        d3.selectAll('path')
+            .style("opacity", opacity);
+        })
+    g.append("g").attr("transform", "translate(0," + height + ")").call(d3.axisBottom(x)).append("text").attr("y", height + 300 ).attr("x", width - 100).attr("text-anchor", "end").attr("stroke", "black").text("Race");
+
+    g.append("g").call(d3.axisLeft(y)).append("text").attr("transform", "rotate(-90)").attr("y", 6).attr("dy", "-5.1em").attr("text-anchor", "end").attr("stroke", "black").text("Average Age at Arrest");
 }
 
-function getBubbleSizeScale() {
-    // Add a scale for bubble size
-    const z = d3.scaleLog()
-        .domain([200000, 1310000000])
-        .range([1, 30]);
-    return z;
-}
-
-function getContinentKeys() {
-    return ["Western Europe", "North America", "Australia and New Zealand", "Middle East and Northern Africa", "Latin America and Caribbean", "Southeastern Asia", "Central and Eastern Europe", "Sub-Saharan Africa"];
-}
-
-function firstChartTooltipHTML(object) {
-    return "<div>" + object.entity + "</div><div>$" + Math.round(object.AgeatArrest) + "/year</div><div>" + Math.round(object.DaysinJail) + " hrs worked yearly</div>";
-}
 
 async function loadThree() {
     const data = await d3.csv('https://ypatel55.github.io/CS416/data/CCSOData.csv');
 
-    const filteredData = data.filter(function (d) {
-        return d.RACE != "" && d.RACE != "Unknown" && d.AgeatArrest != "" && d.DaysinJail != ""});
+    var text = "";
+    var opacity = 1, hoverOpacity = 0.50, other = 1, tooltipSize = 15;
+
+    const blackData = data.filter(function (d) {
+        return d.RACE == 'Black'});
+    var blackAVG = d3.sum(blackData.map(function(d) {                
+        return d.DaysinJail;                                           
+      }))/36319; 
+
+    const whiteData = data.filter(function (d) {
+        return d.RACE == 'White'});
+    var whiteAVG = d3.sum(whiteData.map(function(d) {                
+        return d.DaysinJail;                                           
+      }))/25175;
+
+    const hispanicData = data.filter(function (d) {
+        return d.RACE == 'Hispanic'});
+    var hispanicAVG = d3.sum(hispanicData.map(function(d) {                
+        return d.DaysinJail;                                           
+      }))/4740;
+
+    const asianData = data.filter(function (d) {
+        return d.RACE == 'Asian/Pacific Islander'});
+    var asianAVG = d3.sum(asianData.map(function(d) {                
+        return d.DaysinJail;                                           
+      }))/751;
+
+    const nativeAmericanData = data.filter(function (d) {
+        return d.RACE == 'Native American'});
+    var nativeAmericanAVG = d3.sum(nativeAmericanData.map(function(d) {                
+        return d.DaysinJail;                                           
+      }))/54;
+
+    const whiteHispanicData = data.filter(function (d) {
+        return d.RACE == 'White (Hispanic)'});
+    var whiteHispanicAVG = d3.sum(whiteHispanicData.map(function(d) {                
+        return d.DaysinJail;                                           
+      }))/20;
+
+
+    const finalData = [{race: "White", value: whiteAVG},{race: "Black", value: blackAVG},{race: "Hispanic", value: hispanicAVG},{race: "Asian/Pacific Islander", value: asianAVG},{race: "Native American", value: nativeAmericanAVG},{race: "White(Hispanic)", value: whiteHispanicAVG}]
 
     var svg = d3.select("#three"),
             margin = 200,
@@ -97,36 +155,136 @@ async function loadThree() {
 
     var x = d3.scaleBand().range([0,width]).padding(0.4)
     var y = d3.scaleLinear().range([height,0])
+    var color = d3.scaleOrdinal(['#85E3FF','#FFB5E8','#AFF8DB','#B5B9FF','#FFCBC1', 'yellow']);
 
     var g = svg.append("g").attr("transform", "translate(" + 100 + "," + 100 + ")");
 
-    x.domain(filteredData.map(function(d) { return d.RACE; }));
-    y.domain([0, d3.max(filteredData, function(d) { return d.AgeatArrest; })]);
+    x.domain(finalData.map(function(d) { return d.race; }));
+    y.domain([0, d3.max(finalData, function(d) { return d.value; })]);
 
     g.append("g").attr("transform", "translate(0," + height + ")").call(d3.axisBottom(x));
     g.append("g").call(d3.axisLeft(y));
 
-    g.selectAll(".bar").data(filteredData).enter().append("rect").attr("class", "bar").attr("x", function(d) { return x(d.RACE); }).attr("y", function(d) { return y(Number(d.AgeatArrest)); }).attr("width", x.bandwidth()).attr("height", function(d) { return height - y(Number(d.AgeatArrest)); });
 
-    g.append("g").attr("transform", "translate(0," + height + ")").call(d3.axisBottom(x)).append("text").attr("y", height - 250).attr("x", width - 100).attr("text-anchor", "end").attr("stroke", "black").text("Race");
+    g.selectAll(".bar").data(finalData).enter().append("rect").attr("class", "bar").attr("x", function(d) { return x(d.race); }).attr("y", function(d) { return y((d.value)); }).attr("width", x.bandwidth()).attr("height", function(d) { return height - y((d.value)); })
+    .on("mouseover", function(d) {
+        d3.selectAll('rect')
+          .style("opacity", other);
+        d3.select(this) 
+          .style("opacity", hoverOpacity);
+  
+      let g = d3.select("svg")
+          .style("cursor", "pointer")
+          .append("g")
+          .attr("class", "tooltip")
+          .style("opacity", 1);
+  
+          g.append("text")
+          .attr("class", "name-text")
+          .text(`${d.finalData.race} (${d.finalData.value})`)
+          .attr('text-anchor', 'middle');
+  
+          let text = g.select("text");
+        })
+      .on("mousemove", function(d) {
+            let mousePosition = d3.mouse(this);
+            let x = mousePosition[0] + width/2;
+            let y = mousePosition[1] + height/2 - tooltipSize;
+        
+            let text = d3.select('.tooltip text');
+            d3.select('.tooltip')
+              .style("opacity", 1)
+              .attr('transform',`translate(${x}, ${y})`);
+        })
+      .on("mouseout", function(d) {   
+          d3.select("svg") 
+            .select(".tooltip").remove();
+        d3.selectAll('path')
+            .style("opacity", opacity);
+        })
+    g.append("g").attr("transform", "translate(0," + height + ")").call(d3.axisBottom(x)).append("text").attr("y", height + 300 ).attr("x", width - 100).attr("text-anchor", "end").attr("stroke", "black").text("Race");
 
-    g.append("g").call(d3.axisLeft(y)).append("text").attr("transform", "rotate(-90)").attr("y", 6).attr("dy", "-5.1em").attr("text-anchor", "end").attr("stroke", "black").text("Age at Arrest");
+    g.append("g").call(d3.axisLeft(y)).append("text").attr("transform", "rotate(-90)").attr("y", 6).attr("dy", "-5.1em").attr("text-anchor", "end").attr("stroke", "black").text("Average Days in Jail");
 }
 
 
 
 async function loadFour() {
-    //const data = await d3.csv('https://ypatel55.github.io/CS416/data/CCSOData.csv');
+    const csvData = await d3.csv('https://ypatel55.github.io/CS416/data/CCSOData.csv');
+    var data = [{race: "White", value: 25175},{race: "Black", value: 36319},{race: "Hispanic", value: 4740},{race: "Asian/Pacific Islander", value: 751},{race: "Native American", value: 54},{race: "White(Hispanic)", value: 20}]
 
-    var color = ['pink','lightyellow','lightgreen','lightcyan','lightblue','violet'];
-    var pie = d3.pie();
+    var text = "";
+    var width = 800, height = 800, opacity = 1, hoverOpacity = 0.50, other = 1, tooltipSize = 15, piechart = "#four";
 
-    var data = [4,8,15,16,23,42];
+    var radius = Math.min(width, height) / 2;
+    var color = d3.scaleOrdinal(['#85E3FF','#FFB5E8','#AFF8DB','#B5B9FF','#FFCBC1', 'yellow']);
 
-    var svg = d3.select("#four").append("g").attr("transform","translate("+150+","+150+")");
+    var svg = d3.select(piechart).append('svg').attr('class','pie').attr('width', width).attr('height', height);
+    var g = svg.append('g').attr('transform', 'translate(' + (width/2) + ',' + (height/2) + ')');
+    var arc = d3.arc().innerRadius(radius - 200).outerRadius(radius);
 
-    d3.select("#four").selectAll("path").data(pie([4,8,15,16,23,42])).enter().append("path").attr("d",arc).attr("fill",function(d,I) {return color[I];});
+    var pie = d3.pie().value(function(d) { return d.value; });
+
+    var path = g.selectAll('path').data(pie(data)).enter().append("g").append('path').attr('d', arc).attr('fill', function(d,i) { return color(i)}).style('opacity', opacity).style('stroke', 'white')
+    .on("mouseover", function(d) {
+      d3.selectAll('path')
+        .style("opacity", other);
+      d3.select(this) 
+        .style("opacity", hoverOpacity);
+
+    let g = d3.select("svg")
+        .style("cursor", "pointer")
+        .append("g")
+        .attr("class", "tooltip")
+        .style("opacity", 1);
+
+        g.append("text")
+        .attr("class", "name-text")
+        .text(`${d.data.race} (${d.data.value}) (${(Math.round(1000 * d.data.value / 67059) / 10) + '%'})`)
+        .attr('text-anchor', 'middle');
+
+        let text = g.select("text");
+      })
+    .on("mousemove", function(d) {
+          let mousePosition = d3.mouse(this);
+          let x = mousePosition[0] + width/2;
+          let y = mousePosition[1] + height/2 - tooltipSize;
+      
+          let text = d3.select('.tooltip text');
+          d3.select('.tooltip')
+            .style("opacity", 1)
+            .attr('transform',`translate(${x}, ${y})`);
+      })
+    .on("mouseout", function(d) {   
+        d3.select("svg") 
+          .select(".tooltip").remove();
+      d3.selectAll('path')
+          .style("opacity", opacity);
+      })
+
+    let legend = d3.select("#four").append('div')
+      .attr('class', 'legend')
+      .style('margin-top', '30px');
+
+let keys = legend.selectAll('.key')
+      .data(data)
+      .enter().append('div')
+      .attr('class', 'key')
+      .style('display', 'flex')
+      .style('align-items', 'center')
+      .style('margin-right', '20px');
+
+    keys.append('div')
+      .attr('class', 'symbol')
+      .style('height', '10px')
+      .style('width', '10px')
+      .style('margin', '5px 5px')
+      .style('background-color', (d, i) => color(i));
+
+    keys.append('div')
+      .attr('class', 'race')
+      .text(d => `${d.race}`);
+
+    keys.exit().remove();
+     
 }
-
-
-
