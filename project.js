@@ -48,9 +48,9 @@ async function loadTwo() {
             width = svg.attr("width") - margin,
             height = svg.attr("height") - margin
 
-    var x = d3.scaleBand().range([0,width]).padding(0.4)
+    var x = d3.scaleBand().range([0,width]).padding(0.2)
     var y = d3.scaleLinear().range([height,0])
-    var color = d3.scaleOrdinal(['#85E3FF','#FFB5E8','#AFF8DB','#B5B9FF','#FFCBC1', 'yellow']);
+    var color = d3.scaleOrdinal(['#85E3FF','#FFB5E8','#AFF8DB','#B5B9FF','#FFCBC1', '#fff06e']);
 
     var g = svg.append("g").attr("transform", "translate(" + 100 + "," + 100 + ")");
 
@@ -61,7 +61,7 @@ async function loadTwo() {
     g.append("g").call(d3.axisLeft(y));
 
 
-    g.selectAll(".bar").data(finalData).enter().append("rect").attr("class", "bar").attr("x", function(d) { return x(d.race); }).attr("y", function(d) { return y((d.value)); }).attr("width", x.bandwidth()).attr("height", function(d) { return height - y((d.value)); })
+    g.selectAll(".bar").data(finalData).enter().append("rect").attr('fill', function(d,i) { return color(i)}).attr("class", "bar").attr("x", function(d) { return x(d.race); }).attr("y", function(d) { return y((d.value)); }).attr("width", x.bandwidth()).attr("height", function(d) { return height - y((d.value)); })
     .on("mouseover", function(d) {
         d3.selectAll('rect')
           .style("opacity", other);
@@ -153,9 +153,9 @@ async function loadThree() {
             width = svg.attr("width") - margin,
             height = svg.attr("height") - margin
 
-    var x = d3.scaleBand().range([0,width]).padding(0.4)
+    var x = d3.scaleBand().range([0,width]).padding(0.2)
     var y = d3.scaleLinear().range([height,0])
-    var color = d3.scaleOrdinal(['#85E3FF','#FFB5E8','#AFF8DB','#B5B9FF','#FFCBC1', 'yellow']);
+    var color = d3.scaleOrdinal(['#85E3FF','#FFB5E8','#AFF8DB','#B5B9FF','#FFCBC1', '#fff06e']);
 
     var g = svg.append("g").attr("transform", "translate(" + 100 + "," + 100 + ")");
 
@@ -166,7 +166,7 @@ async function loadThree() {
     g.append("g").call(d3.axisLeft(y));
 
 
-    g.selectAll(".bar").data(finalData).enter().append("rect").attr("class", "bar").attr("x", function(d) { return x(d.race); }).attr("y", function(d) { return y((d.value)); }).attr("width", x.bandwidth()).attr("height", function(d) { return height - y((d.value)); })
+    g.selectAll(".bar").data(finalData).enter().append("rect").attr('fill', function(d,i) { return color(i)}).attr("class", "bar").attr("x", function(d) { return x(d.race); }).attr("y", function(d) { return y((d.value)); }).attr("width", x.bandwidth()).attr("height", function(d) { return height - y((d.value)); })
     .on("mouseover", function(d) {
         d3.selectAll('rect')
           .style("opacity", other);
@@ -217,7 +217,7 @@ async function loadFour() {
     var width = 800, height = 800, opacity = 1, hoverOpacity = 0.50, other = 1, tooltipSize = 15, piechart = "#four";
 
     var radius = Math.min(width, height) / 2;
-    var color = d3.scaleOrdinal(['#85E3FF','#FFB5E8','#AFF8DB','#B5B9FF','#FFCBC1', 'yellow']);
+    var color = d3.scaleOrdinal(['#85E3FF','#FFB5E8','#AFF8DB','#B5B9FF','#FFCBC1', '#fff06e']);
 
     var svg = d3.select(piechart).append('svg').attr('class','pie').attr('width', width).attr('height', height);
     var g = svg.append('g').attr('transform', 'translate(' + (width/2) + ',' + (height/2) + ')');
@@ -287,4 +287,92 @@ let keys = legend.selectAll('.key')
 
     keys.exit().remove();
      
+}
+
+async function loadFive() {
+    const data = await d3.csv('https://ypatel55.github.io/CS416/data/CCSOData.csv');
+
+    const races = ["White", "Black", "Hispanic", "Asian/Pacific Islander","Native American","White (Hispanic)"]
+
+    var colorCount = 0;
+
+    d3.select("#select-race")
+            .selectAll('options')
+            .data(races)
+            .enter()
+            .append('option')
+            .text(function (d) {
+                return d;
+            }) 
+            .attr("value", function (d) {
+                return d;
+            })
+
+    const blackData = data.filter(function (d) {
+        return d.RACE == 'Black'});
+
+    const whiteData = data.filter(function (d) {
+        return d.RACE == 'White'});
+
+    const hispanicData = data.filter(function (d) {
+        return d.RACE == 'Hispanic'});
+
+    const asianData = data.filter(function (d) {
+        return d.RACE == 'Asian/Pacific Islander'});
+
+
+    const nativeAmericanData = data.filter(function (d) {
+        return d.RACE == 'Native American'});
+
+
+    const whiteHispanicData = data.filter(function (d) {
+        return d.RACE == 'White (Hispanic)'});
+
+    var color = d3.scaleOrdinal(['#85E3FF','#FFB5E8','#AFF8DB','#B5B9FF','#FFCBC1', '#fff06e']);
+
+    var margin = {top: 10, right: 30, bottom: 30, left: 60},
+    width = 1000 - margin.left - margin.right,
+    height = 1000 - margin.top - margin.bottom;
+
+
+    var svg = d3.select("#five")
+     .append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+    .append("g")
+    .attr("transform",
+          "translate(" + margin.left + "," + margin.top + ")");
+
+    var x = d3.scaleLinear()
+    .domain([0, d3.max(data, function(d) { return d.AgeatArrest; })])
+          .range([ 0, width ]);
+        svg.append("g")
+          .attr("transform", "translate(0," + height + ")")
+          .call(d3.axisBottom(x).ticks(7));
+    
+        var y = d3.scaleLinear()
+        .domain([0, d3.max(data, function(d) { return d.DaysinJail; })])
+          .range([ height, 0 ]);
+        svg.append("g")
+          .call(d3.axisLeft(y));
+
+      var dots = svg.selectAll("circle").data(data.filter(function(d){return d.RACE=="White"})).enter().append("circle").attr("cx", function(d) { return x(d.AgeatArrest)}).attr("cy", 
+      function(d) { return y(d.DaysinJail)}).attr("r", 3)
+
+
+      function update(selectedGroup) {
+    
+        var dataFilter = data.filter(function(d){return d.RACE==selectedGroup})
+
+      svg.selectAll("circle").remove()
+      svg.selectAll("circle").data(dataFilter).enter().append("circle").attr("cx", function(d) { return x(d.AgeatArrest)}).attr("cy", 
+      function(d) { return y(d.DaysinJail)}).attr("r", 3)
+      }
+  
+      d3.select("#select-race").on("change", function(d) {
+          var selectedOption = d3.select(this).property("value")
+          update(selectedOption)
+      })
+
+
 }
