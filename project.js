@@ -61,42 +61,24 @@ async function loadTwo() {
     g.append("g").call(d3.axisLeft(y));
 
 
-    g.selectAll(".bar").data(finalData).enter().append("rect").attr('fill', function(d,i) { return color(i)}).attr("class", "bar").attr("x", function(d) { return x(d.race); }).attr("y", function(d) { return y((d.value)); }).attr("width", x.bandwidth()).attr("height", function(d) { return height - y((d.value)); })
-    .on("mouseover", function(d) {
-        d3.selectAll('rect')
-          .style("opacity", other);
-        d3.select(this) 
-          .style("opacity", hoverOpacity);
-  
-      let g = d3.selectAll("svg")
-          .style("cursor", "pointer")
-          .append("g")
-          .attr("class", "tooltip")
-          .style("opacity", 1);
-  
-          g.append("text")
-          .attr("class", "name-text")
-          .text(`${d.finalData.race} (${d.finalData.value})`)
-          .attr('text-anchor', 'middle');
-  
-          let text = g.select("text");
-        })
-      .on("mousemove", function(d) {
-            let mousePosition = d3.mouse(this);
-            let x = mousePosition[0] + width/2;
-            let y = mousePosition[1] + height/2 - tooltipSize;
-        
-            let text = d3.select('.tooltip text');
-            d3.select('.tooltip')
-              .style("opacity", 1)
-              .attr('transform',`translate(${x}, ${y})`);
-        })
-      .on("mouseout", function(d) {   
-          d3.select("svg") 
-            .select(".tooltip").remove();
-        d3.selectAll('path')
-            .style("opacity", opacity);
-        })
+    let bars = g.selectAll(".bar").data(finalData).enter().append("rect").attr('fill', function(d,i) { return color(i)}).attr("class", "bar").attr("x", function(d) { return x(d.race); }).attr("y", function(d) { return y((d.value)); }).attr("width", x.bandwidth()).attr("height", function(d) { return height - y((d.value)); })
+    
+    bars.append("text")
+    .text(function(d) { 
+        return finalData[d];
+    })
+    .attr("x", function(d){
+        return x(d) + x.bandwidth()/2;
+    })
+    .attr("y", function(d){
+        return y(finalData[d]) - 5;
+    })
+    .attr("font-family" , "sans-serif")
+    .attr("font-size" , "14px")
+    .attr("fill" , "black")
+    .attr("text-anchor", "middle");
+
+
     g.append("g").attr("transform", "translate(0," + height + ")").call(d3.axisBottom(x)).append("text").attr("y", height + 300 ).attr("x", width - 100).attr("text-anchor", "end").attr("stroke", "black").text("Race");
 
     g.append("g").call(d3.axisLeft(y)).append("text").attr("transform", "rotate(-90)").attr("y", 6).attr("dy", "-5.1em").attr("text-anchor", "end").attr("stroke", "black").text("Average Age at Arrest");
@@ -167,41 +149,7 @@ async function loadThree() {
 
 
     g.selectAll(".bar").data(finalData).enter().append("rect").attr('fill', function(d,i) { return color(i)}).attr("class", "bar").attr("x", function(d) { return x(d.race); }).attr("y", function(d) { return y((d.value)); }).attr("width", x.bandwidth()).attr("height", function(d) { return height - y((d.value)); })
-    .on("mouseover", function(d) {
-        d3.selectAll('rect')
-          .style("opacity", other);
-        d3.select(this) 
-          .style("opacity", hoverOpacity);
-  
-      let g = d3.select("svg")
-          .style("cursor", "pointer")
-          .append("g")
-          .attr("class", "tooltip")
-          .style("opacity", 1);
-  
-          g.append("text")
-          .attr("class", "name-text")
-          .text(`${d.finalData.race} (${d.finalData.value})`)
-          .attr('text-anchor', 'middle');
-  
-          let text = g.select("text");
-        })
-      .on("mousemove", function(d) {
-            let mousePosition = d3.mouse(this);
-            let x = mousePosition[0] + width/2;
-            let y = mousePosition[1] + height/2 - tooltipSize;
-        
-            let text = d3.select('.tooltip text');
-            d3.select('.tooltip')
-              .style("opacity", 1)
-              .attr('transform',`translate(${x}, ${y})`);
-        })
-      .on("mouseout", function(d) {   
-          d3.select("svg") 
-            .select(".tooltip").remove();
-        d3.selectAll('path')
-            .style("opacity", opacity);
-        })
+    
     g.append("g").attr("transform", "translate(0," + height + ")").call(d3.axisBottom(x)).append("text").attr("y", height + 300 ).attr("x", width - 100).attr("text-anchor", "end").attr("stroke", "black").text("Race");
 
     g.append("g").call(d3.axisLeft(y)).append("text").attr("transform", "rotate(-90)").attr("y", 6).attr("dy", "-5.1em").attr("text-anchor", "end").attr("stroke", "black").text("Average Days in Jail");
@@ -331,8 +279,8 @@ async function loadFive() {
     var color = d3.scaleOrdinal(['#85E3FF','#FFB5E8','#AFF8DB','#B5B9FF','#FFCBC1', '#fff06e']);
 
     var margin = {top: 10, right: 30, bottom: 30, left: 60},
-    width = 1000 - margin.left - margin.right,
-    height = 1000 - margin.top - margin.bottom;
+    width = 800 - margin.left - margin.right,
+    height = 800 - margin.top - margin.bottom;
 
 
     var svg = d3.select("#five")
