@@ -1,9 +1,7 @@
 
-
 .button-group{
     display: inline-flex
 }
-
 .buttons {
     background-color: white;
     color: black;
@@ -13,50 +11,41 @@
     text-decoration: none;
     font-size: 20px;
   }
-
   .buttons {
     transition-duration: 0.2s;
   }
-  
   .buttons:hover {
     background-color: black;
     color: white;
   }
-
   body {
     background-color: #f2f2f2;
     text-align: center;
   }
-
-
-
-
-  .pie {
-    margin: 20px;
-  }
-  
-  svg {
-      float: left;
-  }
-  
   .legend {
     float: left;
     font-family: "Verdana";
     font-size: .7em;
   }
-  
+  .pie {
+    margin: 20px;
+  }
+  .pie .value-text{
+    font-size: 3em;
+  }
+  .pie .name-text{
+    font-size: .8em;
+  }
   .pie text {
     font-family: "Verdana";
     fill: #000;
   }
-  
-  .pie .name-text{
-    font-size: .8em;
+  svg {
+      float: left;
   }
+
   
-  .pie .value-text{
-    font-size: 3em;
-  }
+
 
 
   
